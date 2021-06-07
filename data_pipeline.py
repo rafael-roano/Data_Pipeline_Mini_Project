@@ -2,6 +2,8 @@ import mysql.connector
 import pandas as pd
 
 def get_db_connection():
+    # Set up connection with MySQL database
+
     connection =None
 
     try:
@@ -18,6 +20,7 @@ def get_db_connection():
 
 
 def load_third_party(connection, file_path_csv):
+    # Load csv file to MySQL Table
     
     df = pd.read_csv(file_path_csv, header=None)
     cursor = connection.cursor()
@@ -35,8 +38,35 @@ def load_third_party(connection, file_path_csv):
     return
 
 def query_popular_tickets(connection):
-    # Get the most popular ticket in the past month
-    sql_statement ="SELECT event_name, COUNT(event_name) AS 'tickets_sold' FROM ticket_sales GROUP BY event_name ORDER BY tickets_sold DESC LIMIT 3"
+    # Get the Top-3 most popular event tickets in the past month
+    sql_statement ="SELECT event_name, SUM(num_tickets) AS 'tickets_sold' FROM ticket_sales GROUP BY event_name ORDER BY tickets_sold DESC LIMIT 3"
+    cursor = connection.cursor()
+    cursor.execute(sql_statement)
+    records = cursor.fetchall()
+    cursor.close()
+    return records
+
+def query_expensive_tickets(connection):
+    # Get the Top-3 most expensive event tickets in the past month
+    sql_statement ="SELECT event_name, ROUND(AVG(price),2) AS 'price' FROM ticket_sales GROUP BY event_name ORDER BY price DESC LIMIT 3"
+    cursor = connection.cursor()
+    cursor.execute(sql_statement)
+    records = cursor.fetchall()
+    cursor.close()
+    return records
+
+def query_popular_event(connection):
+    # Get the Top-3 most popular events in the past month
+    sql_statement ="SELECT event_type, SUM(num_tickets) AS 'tickets_sold' FROM ticket_sales GROUP BY event_type ORDER BY tickets_sold DESC LIMIT 3"
+    cursor = connection.cursor()
+    cursor.execute(sql_statement)
+    records = cursor.fetchall()
+    cursor.close()
+    return records
+
+def query_cities_event(connection):
+    # Get the Top-3 cities with more events in the past month
+    sql_statement ="SELECT event_city, COUNT(event_city) AS 'event_n' FROM ticket_sales GROUP BY event_city ORDER BY event_n DESC LIMIT 3"
     cursor = connection.cursor()
     cursor.execute(sql_statement)
     records = cursor.fetchall()
@@ -48,30 +78,23 @@ def show_bullet_results(message, query_results, units):
     
     print(f"{message}")
     for bullet in query_results:
-        print(f"    - {bullet[0]} ({units}: {bullet[1]})")
+        print(f"    - {bullet[0]} ({units}{bullet[1]})")
 
     return
 
 connection = get_db_connection()
 file_path_csv = "/home/jv/Python/SB/SB_Projects/Pipeline_Mini-Project/third_party_sales_1.csv"
 
+load_third_party(connection, file_path_csv)
 
-# load_third_party(connection, file_path_csv)
 popular = query_popular_tickets(connection)
-show_bullet_results("Top-3 Most Popular Tickets in Past Month:", popular, "tickets sold")
-
-# print(popular)
-# print(type(popular))
-# print(type(popular[1]))
-
-# df = pd.read_csv(file_path_csv, header=None)
-# print(type(int(df[0][0])))
-# print(type(df[1][0]))
-# print(type(int(df[2][0])))
-# print(type(df[3][0]))
-# print(type(df[4][0]))
-# print(type(df[5][0]))
-# print(type(df[6][0]))
-# print(type(int(df[7][0])))
-# print(type(float(df[8][0])))
-# print(type(int(df[9][0])))
+show_bullet_results("Top-3 Most Popular Events in Past Month:", popular, "tickets sold: ")
+print()
+expensive = query_expensive_tickets(connection)
+show_bullet_results("Top-3 Most Expensive Events in Past Month:", expensive, "average price: $")
+print()
+event_type = query_popular_event(connection)
+show_bullet_results("Top-3 Most Popular Event Types in Past Month:", event_type, "tickets sold: ")
+print()
+cities = query_cities_event(connection)
+show_bullet_results("Top-3 Cities with More Events in Past Month:", cities, "events: ")

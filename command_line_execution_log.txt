@@ -1,0 +1,19 @@
+Top-3 Most Popular Events in Past Month:
+    - Washington Spirits vs Sky Blue FC (tickets sold: 5)
+    - Christmas Spectacular (tickets sold: 5)
+    - The North American International Auto Show (tickets sold: 4)
+
+Top-3 Most Expensive Events in Past Month:
+    - Christmas Spectacular (average price: $89.95)
+    - Washington Spirits vs Sky Blue FC (average price: $59.34)
+    - Carlisle Ford Nationals (average price: $43.00)
+
+Top-3 Most Popular Event Types in Past Month:
+    - Exhibition (tickets sold: 5)
+    - Sports (tickets sold: 5)
+    - Theater (tickets sold: 5)
+
+Top-3 Cities with More Events in Past Month:
+    - Michigan (events: 2)
+    - New York (events: 2)
+    - Carlisle (events: 1)
